@@ -1,4 +1,4 @@
-import * as harvester from './roles/harvester.js';
+const harvester = require('roles.harvester');
 
 module.exports.loop = function () {
     const spawn = Game.spawns["Spawn1"];

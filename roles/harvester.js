@@ -1,4 +1,4 @@
-export const run = (creep) => {
+module.exports.run = function(creep) => {
     if (needsToHarvest(creep)) {
         harvestEnergy(creep)
     } else {

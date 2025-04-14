@@ -1,8 +1,26 @@
-const harvester = require('harvester');
+const harvester = require('harvester')
 
 module.exports.loop = function () {
     const spawn = Game.spawns["Spawn1"];
 
+    // Spawn logic
+    const HARVESTER_LIMIT = 5;
+    const harvesters = _.filter(Game.creeps, creep => creep.memory.role === 'harvester');
+    console.log(harvesters)
+    if (harvesters.length < HARVESTER_LIMIT && !spawn.spawning) {
+        const body = [WORK, CARRY, MOVE, MOVE]
+        const name = `Harvester${Game.time}`
+
+        const result = spawn.spawnCreep(body, name, {
+            memory: {role: 'harvester'}
+        });
+
+        if (result === OK) {
+            console.log(`Spawning new harvester: ${name}`)
+        }
+    }
+    
+    
     for (const name in Game.creeps) {
         const creep = Game.creeps[name];
 
@@ -15,20 +33,6 @@ module.exports.loop = function () {
             harvester.run(creep)
         }
 
-        // Spawn logic
-        const HARVESTER_LIMIT = 5;
-        const harvesters = _.filter(Game.creeps, creep => creep.memory.role === 'harvester');
-        if (harvesters.length < HARVESTER_LIMIT && !spawn.spawning) {
-            const body = [WORK, CARRY, MOVE, MOVE]
-            const name = `Harvester${Game.time}`
 
-            const result = spawn.spawnCreep(body, name, {
-                memory: {role: 'harvester'}
-            });
-
-            if (result === OK) {
-                console.log(`Spawning new harvester: ${name}`)
-            }
-        }
     }    
 }

@@ -1,4 +1,13 @@
-module.exports.run = function(creep) => {
+/*
+ * Module code goes here. Use 'module.exports' to export things:
+ * module.exports.thing = 'a thing';
+ *
+ * You can import it from another modules like this:
+ * var mod = require('harvester');
+ * mod.thing == 'a thing'; // true
+ */
+
+module.exports.run = function(creep) {
     if (needsToHarvest(creep)) {
         harvestEnergy(creep)
     } else {
@@ -7,7 +16,7 @@ module.exports.run = function(creep) => {
 }
 
 const needsToHarvest = (creep) => {
-    return creep.store[RESOURCE_ENERGY] == 0;
+    return creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0
 }
 
 const harvestEnergy = (creep) => {
@@ -34,7 +43,7 @@ const deliverEnergy = (creep) => {
         target = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
             filter: x => 
                 x.structureType === STRUCTURE_SPAWN &&
-                x.store.[RESOURCE_ENERGY] == 0;
+                x.store.getFreeCapacity(RESOURCE_ENERGY) > 0
         })
     } else if (creep.memory.deliverTarget === 'controller') {
         target = creep.room.controller;

@@ -8,16 +8,27 @@
  */
 
 module.exports.run = function(creep) {
-    if (needsToHarvest(creep)) {
-        harvestEnergy(creep)
-    } else {
+    updateWorkingState(creep);
+
+    if (creep.memory.working) {
         deliverEnergy(creep)
+    } else {
+        harvestEnergy(creep)
     }
 }
 
-const needsToHarvest = (creep) => {
-    return creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-}
+const updateWorkingState = (creep) => {
+    if (creep.memory.working && creep.store[RESOURCE_ENERGY] === 0) {
+      creep.memory.working = false;
+      creep.memory.deliverTarget = creep.memory.deliverTarget === 'spawn' ? 'controller' : 'spawn';
+      creep.say('🔄 harvest');
+    }
+    if (!creep.memory.working && creep.store.getFreeCapacity() === 0) {
+      creep.memory.working = true;
+      creep.say('⚡ deliver');
+    }
+  };
+
 
 const harvestEnergy = (creep) => {
     creep.memory.state = "harvesting" 
@@ -53,8 +64,6 @@ const deliverEnergy = (creep) => {
         const result = creep.transfer(target, RESOURCE_ENERGY)
         if (result === ERR_NOT_IN_RANGE) {
             creep.moveTo(target, {visualizePathStyle: { stroke: '#ffffff' }})
-        } else if (result === OK || result === ERR_FULL) {
-            creep.memory.deliverTarget = creep.memory.deliverTarget === 'spawn' ? 'controller' : 'spawn';
         }
     }
 }

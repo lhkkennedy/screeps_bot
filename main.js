@@ -4,9 +4,8 @@ module.exports.loop = function () {
     const spawn = Game.spawns["Spawn1"];
 
     // Spawn logic
-    const HARVESTER_LIMIT = 5;
+    const HARVESTER_LIMIT = 6;
     const harvesters = _.filter(Game.creeps, creep => creep.memory.role === 'harvester');
-    console.log(harvesters)
     if (harvesters.length < HARVESTER_LIMIT && !spawn.spawning) {
         const body = [WORK, CARRY, MOVE, MOVE]
         const name = `Harvester${Game.time}`

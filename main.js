@@ -1,39 +1,34 @@
+import * as harvester from './roles/harvester.js';
+
 module.exports.loop = function () {
+    const spawn = Game.spawns["Spawn1"];
 
-    Game.spawns["Spawn1"].spawnCreep([WORK,CARRY,MOVE,MOVE], "My First Creep");
-    Game.spawns["Spawn1"].spawnCreep([WORK,CARRY,MOVE,MOVE], "My Second Creep");
-    var mycreep = Game.creeps["My First Creep"];
-    if (mycreep.store[RESOURCE_ENERGY] == 0) {
-        // make an easy reference to the energy source
-        var source = Game.getObjectById('5bbcae5a9099fc012e638d4f');
-        // move my creep to the energy source and harvest energy
-        mycreep.moveTo(source);
-        mycreep.harvest(source);
-    } else {
-        // but if our creep does have energy, bring it to the controller and upgrade it
-        
-        // make an easy reference to the room's controller
-        var controller = mycreep.room.controller;
-        // move my creep to the controller and upgrade it
-        mycreep.moveTo(controller);
-        mycreep.upgradeController(controller);
-        
+    for (const name in Game.creeps) {
+        const creep = Game.creeps[name];
 
-    }
-    mycreep = Game.creeps["My Second Creep"]
-        if (mycreep.store[RESOURCE_ENERGY] == 0) {
-        // make an easy reference to the energy source
-        var source = Game.getObjectById('5bbcae5a9099fc012e638d4f');
-        // move my creep to the energy source and harvest energy
-        mycreep.moveTo(source);
-        mycreep.harvest(source);
-    } else {
-        // but if our creep does have energy, bring it to the controller and upgrade it
-        
-        // make an easy reference to the room's controller
-        var controller = mycreep.room.controller;
-        // move my creep to the controller and upgrade it
-        mycreep.moveTo(controller);
-        mycreep.upgradeController(controller);
-    }
+        // ASSign roles if not already
+        if(!creep.memory.role) {
+            creep.memory.role = 'harvester';
+        }
+
+        if(creep.memory.role === 'harvester') {
+            harvester.run(creep)
+        }
+
+        // Spawn logic
+        const HARVESTER_LIMIT = 5;
+        const harvesters = _.filter(Game.creeps, creep => creep.memory.role === 'harvester');
+        if (harvesters.length < HARVESTER_LIMIT && !spawn.spawning) {
+            const body = [WORK, CARRY, MOVE, MOVE]
+            const name = `Harvester${Game.time}`
+
+            const result = spawn.spawnCreep(body, name, {
+                memory: {role: 'harvester'}
+            });
+
+            if (result === OK) {
+                console.log(`Spawning new harvester: ${name}`)
+            }
+        }
+    }    
 }

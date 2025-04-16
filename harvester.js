@@ -8,32 +8,21 @@
  */
 
 module.exports.run = function(creep) {
-    updateWorkingState(creep);
 
-    if (creep.memory.working) {
-        dropEnergy(creep);
+    if ( creep.store[RESOURCE_ENERGY] === 0) {
+        harvestEnergy(creep);
     } else {
-        harvestEnergy(creep)
+        dropEnergy(creep)
     }
 }
-
-const updateWorkingState = (creep) => {
-    if (creep.memory.working && creep.store[RESOURCE_ENERGY] === 0) {
-      creep.memory.working = false;
-      creep.memory.deliverTarget = creep.memory.deliverTarget === 'spawn' ? 'controller' : 'spawn';
-      creep.say('🔄 harvest');
-    }
-    if (!creep.memory.working && creep.store.getFreeCapacity() === 0) {
-      creep.memory.working = true;
-      creep.say('⚡ deliver');
-    }
-  };
 
   const dropEnergy = (creep) => {
     creep.memory.state = "dropping";
 
     if (creep.store[RESOURCE_ENERGY] > 0) {
         creep.drop(RESOURCE_ENERGY);
+    } else if (creep.store[RESOURCE_ENERGY] === 0) {
+        creep.memory.working = false; // Switch to harvesting when energy is empty
     }
 };
 

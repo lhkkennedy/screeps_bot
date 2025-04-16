@@ -11,7 +11,7 @@ module.exports.run = function(creep) {
     updateWorkingState(creep);
 
     if (creep.memory.working) {
-        deliverEnergy(creep)
+        dropEnergy(creep);
     } else {
         harvestEnergy(creep)
     }
@@ -29,6 +29,13 @@ const updateWorkingState = (creep) => {
     }
   };
 
+  const dropEnergy = (creep) => {
+    creep.memory.state = "dropping";
+
+    if (creep.store[RESOURCE_ENERGY] > 0) {
+        creep.drop(RESOURCE_ENERGY);
+    }
+};
 
 const harvestEnergy = (creep) => {
     creep.memory.state = "harvesting" 
@@ -38,32 +45,5 @@ const harvestEnergy = (creep) => {
     // move my creep to the energy source and harvest energy
     if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
         creep.moveTo(source, {visualizePathStyle: { stroke: '#ffaa00' }});
-    }
-}
-
-const deliverEnergy = (creep) => {
-    creep.memory.state = "delivering"
-
-    if (!creep.memory.deliverTarget) {
-        creep.memory.deliverTarget = 'spawn'
-    }
-
-    let target = null;
-
-    if (creep.memory.deliverTarget === 'spawn') {
-        target = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-            filter: x => 
-                x.structureType === STRUCTURE_SPAWN &&
-                x.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-        })
-    } else if (creep.memory.deliverTarget === 'controller') {
-        target = creep.room.controller;
-    }
-
-    if (target) {
-        const result = creep.transfer(target, RESOURCE_ENERGY)
-        if (result === ERR_NOT_IN_RANGE) {
-            creep.moveTo(target, {visualizePathStyle: { stroke: '#ffffff' }})
-        }
     }
 }

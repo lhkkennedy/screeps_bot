@@ -8,8 +8,7 @@
  */
 
 module.exports.run = function(creep) {
-
-    if ( creep.store[RESOURCE_ENERGY] === 0) {
+    if (creep.store[RESOURCE_ENERGY] === 0) {
         harvestEnergy(creep);
     } else {
         dropEnergy(creep)
@@ -27,12 +26,13 @@ module.exports.run = function(creep) {
 };
 
 const harvestEnergy = (creep) => {
-    creep.memory.state = "harvesting" 
-
-    // make an easy reference to the energy source
-    var source = Game.getObjectById('5bbcae5a9099fc012e638d4f');
-    // move my creep to the energy source and harvest energy
-    if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
-        creep.moveTo(source, {visualizePathStyle: { stroke: '#ffaa00' }});
+    creep.memory.state = "harvesting";
+    // Find all energy sources in the room
+    var sources = creep.room.find(FIND_SOURCES);
+    // Pick the closest source
+    var source = creep.pos.findClosestByPath(sources);
+    // Move the creep to the energy source and harvest energy
+    if (source && creep.harvest(source) === ERR_NOT_IN_RANGE) {
+        creep.moveTo(source, { visualizePathStyle: { stroke: '#ffaa00' } });
     }
-}
+};
